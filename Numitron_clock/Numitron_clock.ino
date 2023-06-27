@@ -51,7 +51,7 @@
 Timezone local;                                  // local timezone variable
 WiFiManager wifiManager;                         // Manager only used in this routine
 bool useLocalTime  = true;                       // start clock in local time
-byte digit[6];                                   // scratchpad memory for display digits 0-5
+byte tube[6];                                    // scratchpad memory for display tubes 0-5
 
 const char knownChars[] =                        // chars that can be shown on a 7-segment display
   "0123456789AbCcdEFGHhIiJLlNnOoPqrStUuyZ _-=?[]'\"*";    
@@ -128,7 +128,7 @@ byte alpha(char c) {                             // return segment data for give
 
 void writeDisplay() {
   for (int i=6; i>=0; --i)                       // update digits 0-5 in reverse order
-    SPI.transfer(digit[i]);                      // send data to display via SPI, 1 byte/digit
+    SPI.transfer(tube[i]);                       // send data to display via SPI, 1 byte/digit
   digitalWrite(LATCH,HIGH);                      // latch it on upgoing pulse
   digitalWrite(LATCH,LOW);                       // complete latch pulse  
 }
@@ -159,13 +159,13 @@ void showTime(time_t t) {                        // display time as "HH MM SS"
   }
   if ((h<10) && !HOUR_LEADING_ZERO               // suppress a leading zero?
   && mode12h())                                  // (only in 12hr mode)                                   
-    digit[0] = 0;                                // yes, blank it
-  else digit[0] = segData[h/10];                 // hours 1st digit
-  digit[1] = segData[h%10];                      // hours 2nd digit
-  digit[2] = segData[m/10];                      // minutes 1st digit
-  digit[3] = segData[m%10];                      // minutes 2nd digit
-  digit[4] = segData[s/10];                      // seconds 1st digit
-  digit[5] = segData[s%10];                      // seconds 2nd digit
+    tube[0] = 0;                                 // yes, blank it
+  else tube[0] = segData[h/10];                  // hours 1st digit
+  tube[1] = segData[h%10];                       // hours 2nd digit
+  tube[2] = segData[m/10];                       // minutes 1st digit
+  tube[3] = segData[m%10];                       // minutes 2nd digit
+  tube[4] = segData[s/10];                       // seconds 1st digit
+  tube[5] = segData[s%10];                       // seconds 2nd digit
   writeDisplay();                                // send data to display
 }
 
@@ -173,18 +173,18 @@ void showDate(time_t t) {                        // display date as "MM DD YY"
   int m = month(t);                              // get months, days, and years
   int d = day(t);
   int y = year(t)-2000;                          // convert to 2-digit year (2023->23)
-  digit[0] = segData[m/10];                      // months 1st digit
-  digit[1] = segData[m%10];                      // months 2nd digit
-  digit[2] = segData[d/10];                      // days 1st digit
-  digit[3] = segData[d%10];                      // days 2nd digit
-  digit[4] = segData[y/10];                      // minutes 1st digit
-  digit[5] = segData[y%10];                      // minutes 2nd digit
+  tube[0] = segData[m/10];                       // months 1st digit
+  tube[1] = segData[m%10];                       // months 2nd digit
+  tube[2] = segData[d/10];                       // days 1st digit
+  tube[3] = segData[d%10];                       // days 2nd digit
+  tube[4] = segData[y/10];                       // minutes 1st digit
+  tube[5] = segData[y%10];                       // minutes 2nd digit
   writeDisplay();                                // send data to display
 }
 
 void showString(const char *str) {
   for (int i=0; i<strlen(str); i++)              // for each character in string..
-    digit[i] = alpha(str[i]);                    // get segment data for that character
+    tube[i] = alpha(str[i]);                     // get segment data for that character
   writeDisplay();                                // send data to display
 }
 
@@ -192,7 +192,7 @@ void startupScreen() {
   if (switchPressed()) return;                   // bypass startup if switch is pressed
   for (int i=0; i<9; i++) {                      // count 0-8 on all digits
     for (int d=0; d<6; d++)                      // for each digit #0-#5
-      digit[d] = segData[i];                     // set digit to the current count
+      tube[d] = segData[i];                     // set digit to the current count
     writeDisplay();                              // send data to display
     delay(150);                                  // wait for all segments to illuminate
   }

@@ -46,7 +46,7 @@
 // ============ GLOBAL VARIABLES =====================================================
 
 Timezone local;                                  // local timezone variable
-byte digit[6];                                   // scratchpad memory for 6 display digits
+byte tube[6];                                    // scratchpad memory for 6 display tubes
 
 const byte segments[] = 
   {0xE7, 0x41, 0xB3, 0xF1, 0x55,                 // segments for digits 0..4
@@ -60,7 +60,7 @@ void enableDisplay(bool on=true) {               // false = display disabled (of
 
 void writeDisplay() {
   for (int i=6; i>=0; --i)                       // update digits 0-5 in reverse order
-    SPI.transfer(digit[i]);                      // send data to display, 1 byte/digit
+    SPI.transfer(tube[i]);                       // send data to display, 1 byte/tube
   digitalWrite(LATCH,HIGH);                      // latch it on upgoing pulse
   digitalWrite(LATCH,LOW);                       // complete latch pulse
 }
@@ -73,12 +73,12 @@ void showTime(time_t t) {
     if (h==0) h=12;                              // 00:00 becomes 12:00
     if (h>12) h-=12;                             // 13:00 becomes 01:00
    }
-  digit[0] = segments[h/10];                     // hours 1st digit
-  digit[1] = segments[h%10];                     // hours 2nd digit
-  digit[2] = segments[m/10];                     // minutes 1st digit
-  digit[3] = segments[m%10];                     // minutes 2nd digit
-  digit[4] = segments[s/10];                     // seconds 1st digit
-  digit[5] = segments[s%10];                     // seconds 2nd digit
+  tube[0] = segments[h/10];                      // hours 1st digit
+  tube[1] = segments[h%10];                      // hours 2nd digit
+  tube[2] = segments[m/10];                      // minutes 1st digit
+  tube[3] = segments[m%10];                      // minutes 2nd digit
+  tube[4] = segments[s/10];                      // seconds 1st digit
+  tube[5] = segments[s%10];                      // seconds 2nd digit
   writeDisplay();                                // send data to display                 
 }
 
